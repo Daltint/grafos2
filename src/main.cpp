@@ -12,8 +12,6 @@ int main(int argc, char** argv) {
         return -1;
     }
 
-    srand(time(0));
-
     // Carregar a imagem
     Mat img = imread(argv[1], IMREAD_GRAYSCALE);
     if (img.empty()) {
@@ -31,24 +29,20 @@ int main(int argc, char** argv) {
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {
             image[i][j].intensity = img.at<uchar>(i, j);
-            image[i][j].label = i * cols + j; // Inicializar com rótulos únicos
             image[i][j].x = i;
             image[i][j].y = j;
-            image[i][j].cost = INF;
         }
     }
 
     // Aplicar o Algoritmo 3
     Algorithm3(image);
 
-    // Criar uma imagem de resultado mantendo a intensidade original
+    // Criar uma imagem de resultado com o mapa de rótulos
     Mat result(rows, cols, CV_8UC1);
 
-    // Manter as intensidades originais das regiões
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {
-            int label = image[i][j].label;
-            result.at<uchar>(i, j) = img.at<uchar>(image[i][j].x, image[i][j].y);
+            result.at<uchar>(i, j) = static_cast<uchar>(image[i][j].label % 256); // Escalar o rótulo para 0-255
         }
     }
 
